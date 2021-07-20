@@ -1,0 +1,57 @@
+#include <MPU6050_tockn.h>
+#include <Wire.h>
+int mp =3;
+int mn =4;
+int lp=9;
+int ln=10;
+float initang,ang;
+static int i=0;
+MPU6050 mpu6050(Wire);
+void setup() {
+  Serial.begin(9600);
+  Wire.begin();
+    
+  mpu6050.begin();
+  mpu6050.calcGyroOffsets(true);
+  pinMode(mp,OUTPUT);
+  pinMode(mn,OUTPUT);
+  pinMode(lp, OUTPUT);
+  pinMode(ln, OUTPUT);
+}
+void right()
+{
+  digitalWrite(mp,HIGH);
+  digitalWrite(mn,LOW);
+  digitalWrite(lp, HIGH);
+  digitalWrite(ln, LOW);
+}
+void sto()
+{
+  digitalWrite(mp,LOW);
+  digitalWrite(mn,LOW);
+  digitalWrite(lp, LOW);
+  digitalWrite(ln, LOW);
+}
+void loop() {
+  i++;
+  mpu6050.update();
+  Serial.print("\tangleZ : ");
+  //Serial.println(mpu6050.getAngleZ());
+  Serial.println(ang);
+  if(i==1)
+  {
+    initang = mpu6050.getAngleZ();
+    Serial.println(initang);
+  }
+  else
+  {
+    ang = mpu6050.getAngleZ();
+    while(initang-ang<=180)
+    {
+      ang = mpu6050.getAngleZ();
+      right();
+    }
+    sto();
+    delay(3000);
+   }
+  }
